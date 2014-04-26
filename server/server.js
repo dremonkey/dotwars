@@ -8,33 +8,23 @@ var express = require('express')
 var Config = require('./config/index.js')
   , log = require('./utils/logger')
   , middleware = require('./middleware')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , sockets = require('./sockets.js');
 
 var config = new Config();
+var server = express();
 
-var startServer = function startServer (server, configObj) {
-
+var startServer = function startServer (configObj) {
   server.set('port', configObj.server.port);
   
-  var app = http.createServer(server).listen(server.get('port'), function () {
+  return http.createServer(server).listen(server.get('port'), function () {
     log.info('Express server listening on port ' + server.get('port'));
-  });
-
-  io.listen(app);
-};
-
-var setupSockets = function () {
-  io.sockets.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-      console.log(data);
-    });
   });
 };
 
 // Sets up the express server instance
 // Instantiates the routes, middleware, and starts the http server
-var init = function init (server) {
+var init = function init () {
 
   // Retrieve the configuration object
   var configObj = config.get();
@@ -52,12 +42,17 @@ var init = function init (server) {
   });
 
   // Start the server
-  startServer(server, configObj);
-  setupSockets();
+  var serverInstance = startServer(configObj);
+
+  // Sockets must be initialized after the server
+  io = io.listen(serverInstance);
+  sockets(io);
 };
 
 // Initializes the server
 config.load().then(function () {
   log.info('Configurations loaded... initializing the server');
-  init(express());
+  init();
 });
+
+module.exports = server;

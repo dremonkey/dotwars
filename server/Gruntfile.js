@@ -44,6 +44,7 @@ module.exports = function (grunt) {
       express: {
         files: [
           'server.js',
+          'sockets.js',
           'middleware/**/*.js',
           'routes/**/*.js',
           'utils/**/*.js'
