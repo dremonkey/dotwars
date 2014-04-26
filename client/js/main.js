@@ -1,24 +1,28 @@
-window.panel = {};
-
 $(document).ready( function() {
-	// resize DIVs and logos
-	resizeFrames();
-	$(window).resize(resizeFrames);
+	// Initialize GUI
+	GUI.repositionElements();
+	$(window).resize(GUI.repositionElements);
+	$("#divPanel").click( function(e) { GUI.panelPop(e); });
 
-	// menu popper
-	$("#divPanel").click( function(e) { main(e); });
+	// Initialize Game State
+
+
 });
 
-// RESIZEFRAMES: repositions and resizes certain elements when user resizes the window
-var resizeFrames = function () {
+/* 
+GUI FUNCTIONS:
+repositionElements(): repositions instructions panel
+panelPop(): handles panel popping
+*/
+
+window.GUI = {};
+GUI.repositionElements = function () {
 	// set popup height
 	var height = $("#divMain").height();
 	var newBottom = ((height / 2) - 140);
 	$("#divPanel").css({'bottom': newBottom});
 };
-
-
-var main = (function () {
+GUI.panelPop = (function () {
 	var popped = false;
 	var handler = function (event) {
 		if (!popped) {
@@ -31,3 +35,4 @@ var main = (function () {
 	};
     return handler;
 })();
+
