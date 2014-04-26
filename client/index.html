@@ -1,7 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="no-js"> 
-  <head></head>
-  <body>
-    <h1>Dot Wars</h1>
-  </body>
+  <head>	
+  	<link rel="stylesheet" type="text/css" href="css/styles.css">
+  	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script>
+	  var socket = io.connect('http://localhost');
+	  socket.on('news', function (data) {
+	    console.log(data);
+	    socket.emit('my other event', { my: 'data' });
+	  });
+	</script>
+  </head>
+	<body>	
+	<div id="divMain">
+		<canvas id="viewport"></canvas>
+	</div>
+
+	<div id="divPanel">
+        <p class="textPopup">A short description about Dot Wars.</p>
+		<p class="textPopup">Maybe some instructions too. Only 40 to 50 words long.</p>
+		<p class="textPopup">Blah blah blah lorem ipsum something something Cicero.</p>
+	</div>
+
+	<div id="divLogo"></div>
+	<script src="js/main.js"></script>
+</body>
 </html>
