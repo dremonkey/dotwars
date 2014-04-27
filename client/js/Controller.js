@@ -14,18 +14,6 @@ $(document).ready( function() {
 
 	// Initialize Player
 	var player = new Player(1);
-	$player = Board.svg.selectAll('path.player').data([player], function(d) { return d.id; })
-	    
-	$player.enter().append('path')
-	    .attr({
-	        class: player.class,
-	        d: player.path,
-	        r: player.radius,
-	        transform: 'translate(' + player.x + ',' + player.y +') rotate(-90)'
-	    })
-	    .style({
-	        fill: 'orange'
-	    });
 
 	// Load Board
 	Board.init();

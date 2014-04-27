@@ -3,6 +3,20 @@ var Player = function(id, x, y) {
   this.x = x || 500;
   this.y = y || 400;
   this.inMotion = false;
+  this.hasChaser = false;
+
+  var player = this;
+  $player = Board.svg.selectAll('path.player').data([player], function(d) { return d.id; })
+      
+  $player.enter().append('path')
+    .attr({
+        class: player.class,
+        d: player.path,
+        r: player.radius,
+        transform: 'translate(' + player.x + ',' + player.y +') rotate(-90)'
+    }).style({
+        fill: 'orange'
+    });
 };
 
 Player.prototype = {};
@@ -28,11 +42,13 @@ Player.prototype.move = function (x, y, event) {
 Player.prototype.act = function (weapon) {
   var weapons = {};
   weapons.chaser = function () {
-    console.log('Chaser fired!');
+    if (this.hasChaser) {
+      console.log("Chaser already exists");
+    } else {
+      this.hasChaser = true;
+      console.log('Chaser fired!');
+    }
   };
-  // weapons.mine = function () {
-  //   console.log('Mine fired!');
-  // };
   weapons.shield = function () {
     console.log('Shield deployed!');
   };
@@ -43,6 +59,7 @@ Player.prototype.act = function (weapon) {
     console.log("Non-proper weapon name.");
   }
 };
+
 
 Player.prototype.die = function () {
   console.log("You died!");
