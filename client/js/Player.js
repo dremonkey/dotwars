@@ -36,7 +36,7 @@ Player.prototype.move = function (x, y, event) {
     .attr({transform: 'translate(' + player.x + ',' + player.y +') rotate(-90)'})
     .each('end', function () { player.inMotion = false; });
   
-  force.resume();
+  physics.resume();
 };
 
 Player.prototype.act = function (weapon) {

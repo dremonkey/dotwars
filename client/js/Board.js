@@ -62,7 +62,8 @@ Board.getDistance = function (x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
 };
 Board.getAngle = function(x1, y1, x2, y2) {
-    if (y2 >= y1 && x2 >= x1) { return; }
-    if (y2 >= y1 && x2 < x1) { return; }
-    if (y2 - y1 )
+    if (y2 >= y1 && x2 >= x1) { return 180 - Math.sin((y2 - y1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
+    if (y2 >= y1 && x2 < x1) { return 0 - Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
+    if (y2 < y1 && x2 >= x1) { return 180 + Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi());  }
+    if (y2 < y1 && x2 < x1) { return 180 + Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
 };

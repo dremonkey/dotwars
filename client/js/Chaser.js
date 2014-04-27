@@ -1,20 +1,25 @@
-var Chaser = function(id, x, y) {
-  this.owner = id;
-  this.x = x;
-  this.y = y;
+var Chaser = function(source, target, x, y) {
+  this.owner = source;
+  this.target = target;
+  this.x = source.x;
+  this.y = source.y;
+  this.r = 10;
 
   var chaser = this;
   $chaser = Board.svg.selectAll('path.player').data([chaser], function(d) { return d.id; })
       
+
+  var distance = 
   $chaser.enter().append('circle')
+  	.transition()
+  	.duration(2000)
     .attr({
         class: chaser.class,
-        d: chaser.path,
-        r: chaser.radius,
-        transform: 'translate(' + chaser.x + ',' + chaser.y +') rotate(-90)'
+        cx: target.x,
+        cy: target.y,
+        r: chaser.r,
     }).style({
-        fill: 'orange'
+        fill: '#d23f0f'
     });
-
 
 };
