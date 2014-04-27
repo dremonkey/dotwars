@@ -12,6 +12,15 @@ $(document).ready( function() {
 		
 	});
 
+	// on left, player.move(player.x - player.velocity, player.y, event);
+	// on right, player.move(player.x + player.velocity, player.y, event);
+	// on up, player.move(player.x , player.y - player.velocity, event);
+	// on down, player.move(player.x, player.y + player.velocity, event);
+	// on leftUp, player.move(player.x - player.velocity, player.y - player.velocity, event); //1.4142
+	// on rightUp, player.move(player.x + player.velocity, player.y - player.velocity, event);
+	// on leftDown, player.move(player.x - player.velocity, player.y + player.velocity, event);
+	// on rightDown, player.move(player.x + player.velocity, player.y + player.velocity, event);
+
 	// Initialize Player
 	var socket = io.connect('http://127.0.0.1:3000');
 	var players = [];
