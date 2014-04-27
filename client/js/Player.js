@@ -28,11 +28,11 @@ Player.prototype.path = "m-7.5,1.62413c0,-5.04095 4.08318,-9.12413 9.12414,-9.12
 Player.prototype.move = function (targetX, targetY) {
   var player = this;
   var distance = Board.getDistance(player.x, player.y, targetX, targetY);
-  var angle = Board.getAngle(player.x, player.y, targetX, targetY);
-  // var angle = 0;
+  // var angle = Board.getAngle(player.x, player.y, targetX, targetY);
+  var angle = '-90';
 
-  player.x = player.mouseX;
-  player.y = player.mouseY;
+  player.x = targetX;
+  player.y = targetY;
   player.inMotion = true;
   var $player = d3.selectAll('path.player').data([player], function(d) { return d.id; })
 
@@ -42,7 +42,6 @@ Player.prototype.move = function (targetX, targetY) {
     .attr({transform: 'translate(' + player.x + ',' + player.y +') rotate(' + angle + ')'})
     .each('end', function () { player.inMotion = false; });
   
-  socket.emit('move', {handle: player.id, x: targetX, y: targetY});
   Board.physics.resume();
 };
 

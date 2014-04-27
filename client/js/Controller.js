@@ -1,3 +1,29 @@
+var Players = function () {
+  this._players = [];
+};
+
+Players.prototype.get = function (handle) {
+	console.log(handle);
+  return _.find(this._players, function (player) {
+    return player.id === handle;
+  });
+};
+
+Players.prototype.add = function (player) {
+	var exists = _.some(this._players, {id: player.id});
+	if (!exists) this._players.push(player);
+};
+
+Players.prototype.remove = function (handle) {
+  _.remove(this._players, function (player) {
+    return player.id === handle;
+  });
+};
+
+Players.prototype.all = function () {
+  return this._players;
+};
+
 $(document).ready( function() {
 	// Initialize GUI
 	GUI.repositionElements();
@@ -12,19 +38,11 @@ $(document).ready( function() {
 		Handler.click(event, player);
 	})
 
-
 	// Initialize Player
 	var socket = io.connect('http://127.0.0.1:3000');
-	var players = [];
+	var players = new Players();
 	var player = null;
 
-	var addPlayer = function (player) {
-		var exists = _.some(players, {id: player.id});
-		console.log('player exists', player.id, exists);
-		if (!exists) {
-			players.push(player);
-		}
-	}
 
 	// --------------------------------------------------------------
 	// Initialize Enviroment for gameplay
@@ -33,7 +51,7 @@ $(document).ready( function() {
 	socket.on('spawnPlayer', function (handle) {
 		player = new Player(handle, null, null, true);
 		console.log(player);
-		addPlayer(player);
+		players.add(player);
 
 		// Tell the server that the new player has been created
 		socket.emit('newPlayerSpawned', handle);
@@ -44,7 +62,7 @@ $(document).ready( function() {
 		console.log('spawnEnemy', enemy);
 		if (player.id !== enemy.handle) {
 			enemy = new Player(enemy.handle, enemy.x, enemy.y);
-			addPlayer(enemy);
+			players.add(enemy);
 		}
 	});
 
@@ -62,7 +80,7 @@ $(document).ready( function() {
 
 		// Add new player to the gameboard
 		var enemy = new Player(newPlayerHandle);
-		addPlayer(enemy);
+		players.add(enemy);
 	});
 
 	socket.on('respawn', function (handle) {
@@ -72,9 +90,14 @@ $(document).ready( function() {
 	// --------------------------------------------------------------
 	// Movement
 	socket.on('moveEnemy', function (move) {
-		var enemy = players.get(move.playerHandle);
-		enemy.move(end.x, end.y);
+		console.log(move);
+		var enemy = players.get(move.handle);
+		enemy.move(move.x, move.y);
 	});
+
+	setInterval(function () {
+		socket.emit('move', {handle: player.id, x: player.x, y: player.y});
+	}, 500);
 
 	// Load Board
 	Board.init();
