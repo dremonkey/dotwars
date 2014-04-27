@@ -4,14 +4,36 @@
 var _ = require('lodash');
 var Moniker = require('moniker');
 
-var players = [];
+var Players = function () {
+  this._players = [];
+};
+
+Players.prototype.get = function (handle) {
+  return _.find(this._players, function (player) {
+    return player.getHandle() === handle;
+  });
+};
+
+Players.prototype.add = function (player) {
+  this._players.push(player);
+};
+
+Players.prototype.remove = function (handle) {
+  _.remove(this._players, function (player) {
+    return player.getHandle() === handle;
+  });
+};
+
+Players.prototype.all = function () {
+  return this._players;
+};
 
 var Player = function (handle) {
   this.handle = handle || Moniker.choose();
   this.kills = 0;
   this.deaths = 0;
-
-  players.push(this);
+  this.x = 500; // not accurate... only accurate at spawn time
+  this.y = 500; // not accurate... only accurate at spawn time
 };
 
 Player.prototype.getHandle = function () {
@@ -34,18 +56,21 @@ Player.prototype.updateKills = function () {
   this.deaths = this.kills + 1;
 };
 
+Player.prototype.updatePos = function (x, y) {
+  this.x = x;
+  this.y = y;
+};
+
+var players = new Players();
+
 module.exports = function (io) {
 
   var updateScoreboard = function () {
-    io.sockets.emit('scoreboard', players);
+    io.sockets.emit('scoreboard', players.all());
   };
 
   var removePlayer = function (playerHandle) {
-
-    _.remove(players, function (player) {
-      return player.getHandle() === playerHandle;
-    });
-
+    players.remove(playerHandle);
     updateScoreboard();
     io.sockets.emit('news', {msg: playerHandle + ' has left the game'});
   };
@@ -54,6 +79,9 @@ module.exports = function (io) {
     
     var player = new Player();
     var handle = player.getHandle();
+
+    // Add player to the players object
+    players.add(player);
 
     // Update the scoreboard with the new player
     updateScoreboard();
@@ -64,20 +92,28 @@ module.exports = function (io) {
 
     socket.emit('news', { msg: 'Welcome to DotWars. Your player handle is ' + handle });
 
-    // Let the client know who this player is
-    socket.emit('setPlayer', {handle: handle, players: players});
+    // spawn the player
+    socket.emit('spawnPlayer', handle);
 
-    // On connect, send out a birh event to all connected
-    socket.broadcast.emit('playerJoined', handle);
+    socket.on('newPlayerSpawned', function () {
+      // Let everyone know who the new player is...
+      // also asks each connection to return
+      // their current position via the 'playersPosition' broadcast.
+      socket.broadcast.emit('reqPositions');
+      socket.broadcast.emit('playerJoined', handle);
+    });
+
+    socket.on('playerPosition', function (data) {
+      console.log('playerPosition', data);
+      socket.broadcast.emit('spawnEnemy', {handle: data.handle, x: data.x, y: data.y});
+    });
 
     // Use for respawn
     socket.on('respawn', function () {
-      console.log('birth');
       socket.broadcast.emit('birth', handle);
     });
 
     socket.on('death', function () {
-      console.log('death');
       socket.broadcast.emit('death', handle);
     });
 

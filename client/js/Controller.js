@@ -27,33 +27,54 @@ $(document).ready( function() {
 	var player = null;
 
 	var addPlayer = function (player) {
-		var exists = _.some(players, {handle: player.handle});
+		var exists = _.some(players, {id: player.id});
+		console.log('player exists', player.id, exists);
 		if (!exists) {
 			players.push(player);
 		}
 	}
-	
-	socket.on('setPlayer', function (data) {
-		var handle = data.handle;
-		var others = data.players;
 
-		console.log('setPlayer', data);
-
+	// --------------------------------------------------------------
+	// Initialize Enviroment for gameplay
+	//
+	// On connection, create a new player in the center of the screen
+	socket.on('spawnPlayer', function (handle) {
 		player = new Player(handle, null, null, true);
+		console.log(player);
 		addPlayer(player);
 
-		for (var i = 0; i < others.length; i++) {
-			addPlayer(new Player(others[i].handle));
-		};
+		// Tell the server that the new player has been created
+		socket.emit('newPlayerSpawned');
+	});
+
+	// Listen for the spawn enemies broadcast
+	socket.on('spawnEnemy', function (enemy) {
+		console.log('spawnEnemy', enemy);
+		if (player.id !== enemy.handle) {
+			enemy = new Player(enemy.handle, enemy.x, enemy.y);
+			addPlayer(enemy);
+		}
+	});
+
+	// --------------------------------------------------------------
+	// Listen for new players (enemies) joining
+	socket.on('reqPosition', function () {
+		
+	});
+	
+	socket.on('playerJoined', function (newPlayerHandle) {
+		// Let the new enemy player know where I am
+		socket.emit('playerPosition', {handle: player.id, x: player.x, y: player.y});
+	
+		console.log('add new player to the gameboard', newPlayerHandle);
+
+		// Add new player to the gameboard
+		var enemy = new Player(newPlayerHandle);
+		addPlayer(enemy);
 	});
 
 	socket.on('respawn', function (handle) {
 		player = new Player(handle, null, null, true);
-	});
-
-	socket.on('playerJoined', function (handle) {
-		var player = new Player(handle);
-		addPlayer(player);
 	});
 
 	// Load Board
