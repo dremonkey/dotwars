@@ -13,7 +13,39 @@ $(document).ready( function() {
 	});
 
 	// Initialize Player
-	var player = new Player(1);
+	var socket = io.connect('http://127.0.0.1:3000');
+	var players = [];
+	var player = null;
+
+	var addPlayer = function (player) {
+		var exists = _.some(players, {handle: player.handle});
+		if (!exists) {
+			players.push(player);
+		}
+	}
+	
+	socket.on('setPlayer', function (data) {
+		var handle = data.handle;
+		var others = data.players;
+
+		console.log('setPlayer', data);
+
+		player = new Player(handle, null, null, true);
+		addPlayer(player);
+
+		for (var i = 0; i < others.length; i++) {
+			addPlayer(new Player(others[i].handle));
+		};
+	});
+
+	socket.on('respawn', function (handle) {
+		player = new Player(handle, null, null, true);
+	});
+
+	socket.on('playerJoined', function (handle) {
+		var player = new Player(handle);
+		addPlayer(player);
+	});
 
 	// Load Board
 	Board.init();
