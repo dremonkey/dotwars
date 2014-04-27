@@ -1,0 +1,22 @@
+#scoreboard {
+  position: absolute;
+  height: 200px;
+  width: 200px;
+  right: 10px;
+  top: 10px;
+
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+#scoreboard th,
+#scoreboard td {
+  text-align: left;
+  padding: 2px 5px;
+}
+
+#scoreboard td.kills,
+#scoreboard td.deaths {
+  text-align: right;
+}
