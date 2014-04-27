@@ -4,31 +4,46 @@
 var _ = require('lodash');
 var Moniker = require('moniker');
 
-module.exports = function (io) {
+var users = [];
 
-  var users = [];
+var User = function (handle) {
+  this.handle = handle || Moniker.choose();
+  this.kills = 0;
+  this.deaths = 0;
+
+  users.push(this);
+};
+
+User.prototype.getHandle = function () {
+  return this.handle;
+};
+
+User.prototype.getKills = function () {
+  return this.kills;
+};
+
+User.prototype.getDeaths = function () {
+  return this.deaths;
+};
+
+User.prototype.updateDeaths = function () {
+  this.deaths = this.deaths + 1;
+};
+
+User.prototype.updateKills = function () {
+  this.deaths = this.kills + 1;
+};
+
+module.exports = function (io) {
 
   var updateScoreboard = function () {
     io.sockets.emit('scoreboard', users);
   };
 
-  var addUser = function () {
-    
-    var user = {
-      handle: Moniker.choose(),
-      kills: 0,
-      deaths: 0
-    };
-
-    users.push(user);
-    updateScoreboard();
-    return user;
-  };
-
   var removeUser = function (userHandle) {
 
     _.remove(users, function (user) {
-      return user.handle === userHandle;
+      return user.getHandle() === userHandle;
     });
 
     updateScoreboard();
@@ -37,22 +52,30 @@ module.exports = function (io) {
 
   io.sockets.on('connection', function (socket) {
     
-    var user = addUser();
+    var user = new User();
+    var handle = user.getHandle();
+
+    // Update the scoreboard with the new user
+    updateScoreboard();
     
     socket.on('disconnect', function () {
-      removeUser(user.handle);
+      removeUser(handle);
     });
 
-    socket.emit('news', { msg: 'Welcome to DotWars. Your player handle is ' + user.handle });
+    socket.emit('news', { msg: 'Welcome to DotWars. Your player handle is ' + handle });
 
     socket.on('birth', function () {
       console.log('birth');
-      socket.broadcast.emit('birth', user.handle);
+      socket.broadcast.emit('birth', handle);
     });
 
     socket.on('death', function () {
       console.log('death');
-      socket.broadcast.emit('death', user.handle);
+      socket.broadcast.emit('death', handle);
+    });
+
+    socket.on('kill', function (killedUserHandle) {
+      socket.broadcast.emit('kill', handle + ' killed ' + killedUserHandle);
     });
 
     socket.on('move', function (data) {
@@ -61,7 +84,7 @@ module.exports = function (io) {
       // @param end (obj) x,y position to end at
 
       var move = {
-        userHandle: user.handle,
+        userHandle: handle,
         start: data.start,
         end: data.end
       };
