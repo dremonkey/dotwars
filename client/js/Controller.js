@@ -36,7 +36,7 @@ $(document).ready( function() {
 		addPlayer(player);
 
 		// Tell the server that the new player has been created
-		socket.emit('newPlayerSpawned');
+		socket.emit('newPlayerSpawned', handle);
 	});
 
 	// Listen for the spawn enemies broadcast
@@ -49,15 +49,15 @@ $(document).ready( function() {
 	});
 
 	// --------------------------------------------------------------
-	// Listen for new players (enemies) joining
+	//
+	// Let the new enemy player know where I am
 	socket.on('reqPosition', function () {
-		
-	});
-	
-	socket.on('playerJoined', function (newPlayerHandle) {
-		// Let the new enemy player know where I am
+		console.log('sending current position');
 		socket.emit('playerPosition', {handle: player.id, x: player.x, y: player.y});
-	
+	});
+
+	// Listen for new players (enemies) joining
+	socket.on('playerJoined', function (newPlayerHandle) {
 		console.log('add new player to the gameboard', newPlayerHandle);
 
 		// Add new player to the gameboard
@@ -67,6 +67,13 @@ $(document).ready( function() {
 
 	socket.on('respawn', function (handle) {
 		player = new Player(handle, null, null, true);
+	});
+
+	// --------------------------------------------------------------
+	// Movement
+	socket.on('moveEnemy', function (move) {
+		var enemy = players.get(move.playerHandle);
+		enemy.move(end.x, end.y);
 	});
 
 	// Load Board

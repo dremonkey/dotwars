@@ -95,16 +95,16 @@ module.exports = function (io) {
     // spawn the player
     socket.emit('spawnPlayer', handle);
 
-    socket.on('newPlayerSpawned', function () {
+    // asks each connection to return their current position 
+    // position will be returned via the 'playersPosition' broadcast.
+    socket.broadcast.emit('reqPosition');
+
+    socket.on('newPlayerSpawned', function (handle) {
       // Let everyone know who the new player is...
-      // also asks each connection to return
-      // their current position via the 'playersPosition' broadcast.
-      socket.broadcast.emit('reqPositions');
       socket.broadcast.emit('playerJoined', handle);
     });
 
     socket.on('playerPosition', function (data) {
-      console.log('playerPosition', data);
       socket.broadcast.emit('spawnEnemy', {handle: data.handle, x: data.x, y: data.y});
     });
 
@@ -126,13 +126,7 @@ module.exports = function (io) {
       // @param start (obj) x,y position to start from
       // @param end (obj) x,y position to end at
 
-      var move = {
-        playerHandle: handle,
-        start: data.start,
-        end: data.end
-      };
-
-      socket.broadcast.emit('move', move);
+      socket.broadcast.emit('moveEnemy', data);
     });
   });
 };
