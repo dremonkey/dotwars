@@ -1,7 +1,8 @@
-var Player = function(id, x, y) {
+var Player = function(id, x, y, isUser) {
   this.id = id;
   this.x = x || 500;
   this.y = y || 400;
+  this.isUser = isUser || false;
   this.inMotion = false;
   this.hasChaser = false;
 
@@ -10,12 +11,13 @@ var Player = function(id, x, y) {
       
   $player.enter().append('path')
     .attr({
+        id: player.id,
         class: player.class,
         d: player.path,
         r: player.radius,
         transform: 'translate(' + player.x + ',' + player.y +') rotate(-90)'
     }).style({
-        fill: 'orange'
+        fill: function () { return player.isUser ? 'orange' : 'red' }
     });
 };
 

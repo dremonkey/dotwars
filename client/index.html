@@ -1,38 +1,50 @@
 <!DOCTYPE html>
 <html class="no-js"> 
-  <head>	
+  <head>
   	<link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/scoreboard.css">
+
   	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.js"></script>
   	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-  	<!--script src="/socket.io/socket.io.js"></script>
-  	<script>
-	  var socket = io.connect('http://localhost');
-	  socket.on('news', function (data) {
-	    console.log(data);
-	    socket.emit('my other event', { my: 'data' });
-	  });
-	</script-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+  	<script src="/socket.io/socket.io.js"></script>
   </head>
 	<body>	
 	<div id="divMain">
+
+    <div id="scoreboard" style="color: white">
+      <table>
+        <thead>
+          <th>Player</th>
+          <th>Kills</th>
+          <th>Deaths</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
 		<svg id="gameBoard">
 			
 		</svg>
 	</div>
 
 	<div id="divPanel">
-        <p class="textPopup">A short description about Dot Wars.</p>
+    <p class="textPopup">A short description about Dot Wars.</p>
 		<p class="textPopup">Maybe some instructions too. Only 40 to 50 words long.</p>
 		<p class="textPopup">Blah blah blah lorem ipsum something something Cicero.</p>
 		<p id="scoreboard" class="textPopup"></p>
 	</div>
 
 	<div id="divLogo"></div>
+  <script src="js/scoreboard.js"></script>
 	<script src="js/Player.js"></script>
 	<script src="js/Chaser.js"></script>
 	<script src="js/Shield.js"></script>
 	<script src="js/Board.js"></script>
 	<script src="js/Controller.js"></script>
 
+  <script>
+    new Scoreboard();
+  </script>
 </body>
 </html>
