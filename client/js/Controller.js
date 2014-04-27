@@ -2,24 +2,16 @@ $(document).ready( function() {
 	// Initialize GUI
 	GUI.repositionElements();
 	$(window).resize(GUI.repositionElements);
-	$("#divPanel").click( function(e) { GUI.panelPop(e); });
+	$('#divPanel').click( function(e) { GUI.panelPop(e); });
 
 	// Click and Keydown Behaviours
-	$("#divMain").on("click", function(event) {
-		if (!player.inMotion) Handler.click(event, player);
+	$('#divMain').on('mousemove', function(event) {
+		if (!player.inMotion) Handler.mousemove(event, player);
 	});
-	$("#divMain").on("keydown", function(event) {
-		
-	});
+	$('#divMain').on('click', function(event) {
+		Handler.click(event, player);
+	})
 
-	// on left, player.move(player.x - player.velocity, player.y, event);
-	// on right, player.move(player.x + player.velocity, player.y, event);
-	// on up, player.move(player.x , player.y - player.velocity, event);
-	// on down, player.move(player.x, player.y + player.velocity, event);
-	// on leftUp, player.move(player.x - player.velocity, player.y - player.velocity, event); //1.4142
-	// on rightUp, player.move(player.x + player.velocity, player.y - player.velocity, event);
-	// on leftDown, player.move(player.x - player.velocity, player.y + player.velocity, event);
-	// on rightDown, player.move(player.x + player.velocity, player.y + player.velocity, event);
 
 	// Initialize Player
 	var socket = io.connect('http://127.0.0.1:3000');
@@ -112,8 +104,36 @@ GUI.panelPop = (function () {
 CONTROLLER
 */
 var Handler = {};
-Handler.click = function (event, player) {
+Handler.mousemove = function (event, player) {
+	player.mouseX = event.clientX;
+	player.mouseY = event.clientY;
 	player.move(event.clientX, event.clientY);
 };
-// Handler.
+Handler.click = function (event, player) {
+	console.log(player, ' clicked!');
+};
+	// jwerty.key('←', function(event) {
+	// 	player.move(player.x - player.velocity, player.y, event);
+	// });
+	// jwerty.key('↓', function(event) {
+	// 	player.move(player.x, player.y + player.velocity, event);
+	// });
+	// jwerty.key('↑', function(event) {
+	// 	player.move(player.x , player.y - player.velocity, event);
+	// });
+	// jwerty.key('→', function(event) {
+	// 	player.move(player.x + player.velocity, player.y, event);
+	// });
+	// jwerty.key('←'+'↑', function(event) {
+	// 	player.move(player.x - player.velocity, player.y - player.velocity, event);
+	// });
+	// jwerty.key('←'+'↓', function(event) {
+	// 	player.move(player.x - player.velocity, player.y + player.velocity, event);
+	// });
+	// jwerty.key('→'+'↑', function(event) {
+	// 	player.move(player.x + player.velocity, player.y - player.velocity, event);
+	// });
+	// jwerty.key('→'+'↓', function(event) {
+	// 	player.move(player.x + player.velocity, player.y + player.velocity, event);
+	// });
 

@@ -1,5 +1,6 @@
 var Board = {};
 Board.svg = d3.selectAll('#gameBoard');
+Board.physics = {};
 Board.init = function () {
     var svg = Board.svg;
     var rockData = d3.range(20).map(function (i) {
@@ -14,7 +15,7 @@ Board.init = function () {
         var $player = d3.selectAll('.player');
         var $rocks = d3.selectAll('.rock').data(rockData);
 
-        physics.alpha(0.1);
+        Board.physics.alpha(0.1);
     };
 
     var moveRocks = function (rocks) {
@@ -26,7 +27,7 @@ Board.init = function () {
             .each('end', function () { moveRocks(rocks) });
     };
 
-    var physics = d3.layout.force()
+    Board.physics = d3.layout.force()
         .nodes(rockData)
         .size([$('#divMain').width(), $('#divMain').height()])
         .gravity(0)
@@ -55,15 +56,15 @@ Board.init = function () {
 };
 Board.getCollide = function (x1, y1, r1, x2, y2, r2) {
     var radius = Math.max(r1, r2);
-    var distance = Physics.checkDistance(x1, y1, x2, y2);
+    var distance = Board.getDistance(x1, y1, x2, y2);
     return distance <= radius;
 };
 Board.getDistance = function (x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
 };
 Board.getAngle = function(x1, y1, x2, y2) {
-    if (y2 >= y1 && x2 >= x1) { return -180 - Math.sin((y2 - y1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
-    if (y2 >= y1 && x2 < x1) { return 0 - Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
-    if (y2 < y1 && x2 >= x1) { return 0 + Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi());  }
-    if (y2 < y1 && x2 < x1) { return 180 - Math.sin((x2 - x1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.pi()); }
+    if (y2 >= y1 && x2 >= x1) { return 0 - Math.sin((y2 - y1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.PI); }
+    if (y2 >= y1 && x2 < x1) { return -180 - Math.sin((y2 - y1) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.PI); }
+    if (y2 < y1 && x2 >= x1) { return 0 + Math.sin((Math.abs(y2 - y1)) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.PI);  }
+    if (y2 < y1 && x2 < x1) { return -360 - Math.sin((Math.abs(y2 - y1)) / Board.getDistance(x1, y1, x2, y2)) * (180 / Math.PI); }
 };

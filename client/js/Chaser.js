@@ -23,7 +23,7 @@ var Chaser = function(source, target, x, y) {
 
 };
 
-Chaser.prototype.getTarget(x, y) {
+Chaser.prototype.getTarget = function (x, y) {
   // get players to emit positions and map to array
   var coords = [];
   var target = coords.reduce(function(a,b) {
